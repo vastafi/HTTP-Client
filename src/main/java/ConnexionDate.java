@@ -1,4 +1,4 @@
 public class ConnexionDate {
-  final static  String LOGIN= "";
-  final static  String PASSWORD = "";
-  }
+//  final static  String LOGIN= "";
+//  final static  String PASSWORD = "";
+}

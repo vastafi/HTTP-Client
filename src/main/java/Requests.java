@@ -19,12 +19,12 @@ import static org.jsoup.Jsoup.connect;
 public class Requests {
     private static Map<String, String> cookies = Authentification.getCookies();
 
-    public static String headRequest() throws IOException {
+    public static String head() throws IOException {
         Response response = connect("https://thebox.md/my-account/orders").method(HEAD).cookies(cookies).execute();
         return response.contentType();
     }
 
-    public static Map<String, List<String>> optionsRequest() throws IOException {
+    public static Map<String, List<String>> optionsResponse() throws IOException {
         Response response = connect("https://thebox.md/my-account/orders").method(OPTIONS).cookies(cookies).execute();
         return response.multiHeaders();
     }
@@ -79,16 +79,4 @@ public class Requests {
         exec.shutdown();
         exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
     }
-
-    public static void main(String[] args) throws Exception {
-        System.out.println("Content-Type: " + headRequest());
-        System.out.println("Options response: " + optionsRequest());
-        System.out.println("\n" + searchName("https://thebox.md/my-account/orders"));
-        System.out.println("The list of all links: ");
-        getLinks();
-        System.out.println("\n" + "The list of all emails: ");
-        searchEmails();
-        System.out.println("\n" + "The list of all images: ");
-        getAllImages("https://thebox.md/#pizza");
-    }
-}
+  }

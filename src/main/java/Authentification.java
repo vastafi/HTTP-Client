@@ -12,7 +12,7 @@ public class Authentification {
     private static String PASSWORD_INPUT = "login_password";
     private static String LINK = "https://thebox.md/my-account/login/";
 
-   public static Map<String, String> getCookies() {
+    public static Map<String, String> getCookies() {
         Authenticator.setDefault(
                 new Authenticator() {
                     public PasswordAuthentication getPasswordAuthentication() {
@@ -20,11 +20,9 @@ public class Authentification {
                     }
                 }
         );
-
         System.setProperty("http.proxyHost", " 91.239.85.255 ");
         System.setProperty("http.proxyPort", "8090");
         Connection.Response response = null;
-
          try {
              response = Jsoup.connect(LINK)
                     .referrer(LINK)
@@ -34,8 +32,7 @@ public class Authentification {
                     .execute();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("login error");
-
+            throw new RuntimeException("Login error");
         }
         return response.cookies();
     }

@@ -25,8 +25,6 @@ public class ImagesDownloader extends Thread {
             System.out.println("The image " + imageName + " has been saved in the folder");
         }
 
-        catch (IOException e) {
-            System.err.println("Not found: " + imageURL);
-        }
+        catch (IOException e) {}
     }
 }
