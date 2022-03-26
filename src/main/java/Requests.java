@@ -20,7 +20,7 @@ public class Requests {
     private static Map<String, String> cookies = Authentification.getCookies();
 
     public static String headRequest() throws IOException {
-        Response response = connect("https://www.andys.md/ro/account").method(HEAD).cookies(cookies).execute();
+        Response response = connect("https://thebox.md/my-account/orders").method(HEAD).cookies(cookies).execute();
         return response.contentType();
     }
 
@@ -29,19 +29,19 @@ public class Requests {
         return response.multiHeaders();
     }
 
-    public static String searchMyAccountName(String link) throws Exception {
+    public static String searchName(String link) throws Exception {
         Response response = connect(link).method(GET).cookies(cookies).execute();
         String text = response.body();
         Pattern pattern = Pattern.compile("Val", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(text);
         if (matcher.find()) {
-            return "The name of account was found in the page, this is: " + matcher.group();
+            return "Account name is: " + matcher.group();
         }
-        throw new Exception("The name of account wasn't found in this page");
+        throw new Exception("Account name not found on this page.");
     }
 
     public static void searchEmails() throws Exception {
-        Response response = connect("https://thebox.md/my-account/orders").method(GET).cookies(cookies).execute();
+        Response response = connect("https://thebox.md/contacts/").method(GET).cookies(cookies).execute();
         String text = response.body();
         Pattern pattern = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+");
         Matcher matcher = pattern.matcher(text);
@@ -54,7 +54,7 @@ public class Requests {
 
     public static void getLinks() throws Exception {
         Document doc;
-        doc = Jsoup.connect("https://thebox.md/").get();
+        doc = Jsoup.connect("https://thebox.md/history/").get();
         Elements elements = doc.select("a[href]");
         Set<String> links = new HashSet<String>();
         for (Element e : elements) {
@@ -65,15 +65,14 @@ public class Requests {
 
     public static void getAllImages(String link) throws IOException, InterruptedException {
         Document page = Jsoup.connect(link).cookies(cookies).get();
-        ExecutorService exec = Executors.newFixedThreadPool(10);
-        CountDownLatch latch = new CountDownLatch(5);
+        ExecutorService exec = Executors.newFixedThreadPool(4);
+        CountDownLatch latch = new CountDownLatch(2);
         Elements imageElements = page.getElementsByTag("img");
         for (Element element : imageElements) {
             exec.submit(() -> {
-                ImagesDonwloader.downloadImage(element.absUrl("src"));
+                ImagesDownloader.downloadImage(element.absUrl("src"));
                 latch.countDown();
                 System.out.println(Thread.currentThread().getName());
-
             });
         }
         latch.await();
@@ -82,15 +81,14 @@ public class Requests {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println("\nContent-Type: " + headRequest());
-        System.out.println("\nOptions response: " + optionsRequest());
-        System.out.println("\n" + searchMyAccountName("https://thebox.md/my-account/orders"));
-        System.out.println("\n" + "The list of all links :");
+        System.out.println("Content-Type: " + headRequest());
+        System.out.println("Options response: " + optionsRequest());
+        System.out.println("\n" + searchName("https://thebox.md/my-account/orders"));
+        System.out.println("The list of all links: ");
         getLinks();
-        System.out.println("\n" + "The list of all emails :");
+        System.out.println("\n" + "The list of all emails: ");
         searchEmails();
-        System.out.println("\n" + "The list of all images :");
+        System.out.println("\n" + "The list of all images: ");
         getAllImages("https://thebox.md/#pizza");
-
     }
 }
