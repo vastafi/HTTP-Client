@@ -53,30 +53,30 @@ public class Requests {
     }
 
     public static void getLinks() throws Exception {
-        Document doc;
-        doc = Jsoup.connect("https://thebox.md/history/").get();
-        Elements elements = doc.select("a[href]");
+        Document document;
+        document = Jsoup.connect("https://thebox.md/history/").get();
+        Elements elements = document.select("a[href]");
         Set<String> links = new HashSet<String>();
-        for (Element e : elements) {
-            links.add(e.attr("abs:href"));
+        for (Element element : elements) {
+            links.add(element.attr("abs:href"));
         }
         System.out.println("\n" + links);
     }
 
     public static void getAllImages(String link) throws IOException, InterruptedException {
         Document page = Jsoup.connect(link).cookies(cookies).get();
-        ExecutorService exec = Executors.newFixedThreadPool(4);
-        CountDownLatch latch = new CountDownLatch(2);
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        CountDownLatch countDownLatch = new CountDownLatch(2);
         Elements imageElements = page.getElementsByTag("img");
         for (Element element : imageElements) {
-            exec.submit(() -> {
+            executorService.submit(() -> {
                 ImagesDownloader.downloadImage(element.absUrl("src"));
-                latch.countDown();
+                countDownLatch.countDown();
                 System.out.println(Thread.currentThread().getName());
             });
         }
-        latch.await();
-        exec.shutdown();
-        exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        countDownLatch.await();
+        executorService.shutdown();
+        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
     }
   }
