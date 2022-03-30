@@ -1,4 +1,4 @@
-public class Test {
+public class TestRequests {
     public static void main(String[] args) throws Exception {
         System.out.println("Content-Type: " + Requests.head());
         System.out.println("Options response: " + Requests.optionsResponse());
